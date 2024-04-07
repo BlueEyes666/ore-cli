@@ -62,7 +62,7 @@ impl Miner {
         // Initialize client.
         let signer = self.signer();
         let client =
-            RpcClient::new_with_commitment(self.cluster.clone(), CommitmentConfig::confirmed());
+            RpcClient::new_with_commitment(self.landing_cluster.clone(), CommitmentConfig::confirmed());
 
         // Build instructions.
         let token_account_pubkey = spl_associated_token_account::get_associated_token_address(

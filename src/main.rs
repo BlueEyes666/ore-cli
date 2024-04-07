@@ -23,6 +23,7 @@ use solana_sdk::signature::{read_keypair_file, Keypair};
 struct Miner {
     pub keypair_filepath: Option<String>,
     pub priority_fee: u64,
+    pub landing_cluster: String,
     pub cluster: String,
 }
 
@@ -36,6 +37,15 @@ struct Args {
         default_value = "https://api.mainnet-beta.solana.com"
     )]
     rpc: String,
+
+    #[arg(
+        long,
+        value_name = "NETWORK_URL",
+        help = "Network address of your RPC provider that fast landing",
+        default_value = "https://api.mainnet-beta.solana.com"
+    )]
+    rpc_write: String,
+
 
     #[arg(
         long,
@@ -163,7 +173,8 @@ async fn main() {
     // Initialize miner.
     let args = Args::parse();
     let cluster = args.rpc;
-    let miner = Arc::new(Miner::new(cluster.clone(), args.priority_fee, args.keypair));
+    let cluster_w = args.rpc_write;
+    let miner = Arc::new(Miner::new(cluster.clone(),  cluster_w.clone(), args.priority_fee, args.keypair));
 
     // Execute user command.
     match args.command {
@@ -201,11 +212,12 @@ async fn main() {
 }
 
 impl Miner {
-    pub fn new(cluster: String, priority_fee: u64, keypair_filepath: Option<String>) -> Self {
+    pub fn new(cluster: String, landing_cluster: String, priority_fee: u64, keypair_filepath: Option<String>) -> Self {
         Self {
             keypair_filepath,
             priority_fee,
             cluster,
+            landing_cluster,
         }
     }
 
